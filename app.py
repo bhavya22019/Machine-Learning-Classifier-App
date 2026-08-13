@@ -30,7 +30,17 @@ with st.sidebar:
 
 if uploaded_file is not None:
 
-    df = pd.read_csv(uploaded_file, sep=";")
+    # Automatically support both ; and , separated CSV files
+    try:
+        df = pd.read_csv(uploaded_file, sep=";")
+
+        if df.shape[1] == 1:
+            uploaded_file.seek(0)
+            df = pd.read_csv(uploaded_file)
+
+    except Exception:
+        uploaded_file.seek(0)
+        df = pd.read_csv(uploaded_file)
 
     with st.sidebar:
 
@@ -120,7 +130,6 @@ if uploaded_file is not None:
                 ]
             )
 
-
             with tab1:
 
                 st.subheader("📊 Classification Reports")
@@ -184,7 +193,7 @@ if uploaded_file is not None:
                                 ax.text(
                                     j,
                                     i,
-                                    f"{cm[i,j]}\n({cm_percent[i,j]:.1f}%)",
+                                    f"{cm[i, j]}\n({cm_percent[i, j]:.1f}%)",
                                     ha="center",
                                     va="center",
                                     fontsize=12,
@@ -216,5 +225,3 @@ if uploaded_file is not None:
     st.caption(
         "Developed by Bhavya Sri | Machine Learning Classification Dashboard"
     )
-
-
